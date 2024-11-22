@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+</head>
+<body>
+    <div>
+        <h1>Add Products</h1>
+        <input type="number" id="add-id" placeholder="Enter id">
+        <input type="text" id="add-name" placeholder="Enter name">
+        <input type="number" id="add-price" placeholder="Enter price">
+        <button onclick="AddProduct()">Add</button>
+    </div>
+    <div>
+        <h1>Delete Product</h1>
+        <input type="number" id="delete-id" placeholder="Enter id">
+        <button onclick="DeleteProduct()">Delete</button>
+    </div>
+
+    <script>
+        async function AddProduct() {
+            const id = document.getElementById("add-id").value;
+            const name = document.getElementById("add-name").value;
+            const price = document.getElementById("add-price").value;
+
+            if (!id || !name || !price) {
+                alert("All fields are required for adding a product.");
+                return;
+            }
+
+            const product = { id, name, price };
+
+            try {
+                const res = await fetch("http://127.0.0.1:3000/posts", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(product),
+                });
+                const data = await res.json();
+                console.log("Product Added:", data);
+                alert("Product added successfully!");
+            } catch (error) {
+                console.error("Error adding product:", error);
+                alert("Failed to add product.");
+            }
+        }
+
+        async function DeleteProduct() {
+            const id = document.getElementById("delete-id").value;
+
+            if (!id) {
+                alert("Product ID is required for deletion.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`http://127.0.0.1:3000/posts/${id}`, {
+                    method: "DELETE",
+                });
+                if (res.ok) {
+                    console.log(`Product with ID ${id} deleted.`);
+                    alert("Product deleted successfully!");
+                } else {
+                    console.error("Failed to delete product:", res.status);
+                    alert("Failed to delete product.");
+                }
+            } catch (error) {
+                console.error("Error deleting product:", error);
+                alert("Failed to delete product.");
+            }
+        }
+    </script>
+</body>
+</html>
